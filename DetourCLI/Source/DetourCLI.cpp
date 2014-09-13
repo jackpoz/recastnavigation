@@ -31,32 +31,11 @@ namespace DetourCLI
         float start[] = { startY, startZ, startX };
         float end[] = { endY, endZ, endX };
 
-        dtNavMesh* navMesh;
         // get the navMesh or initialize it
-        if (navMeshes[mapID] == nullptr)
-        {
-            String^ mmapFilePath = mmapsFolderPath + String::Format("{0:D3}.mmap", mapID);
-            if (!File::Exists(mmapFilePath))
-                return false;
-            array<unsigned char>^ mmapData = File::ReadAllBytes(mmapFilePath);
-            if (mmapData->Length < sizeof(dtNavMeshParams))
-                return false;
+        dtNavMesh* navMesh = LoadNavMesh(mapID);
+        if (navMesh == nullptr)
+            return false;
 
-            dtNavMeshParams params;
-            pin_ptr<unsigned char> mmapDataPinned = &mmapData[0];
-            memcpy(&params, mmapDataPinned, sizeof(dtNavMeshParams));
-
-            dtNavMesh* mesh = dtAllocNavMesh();
-            if (dtStatusFailed(mesh->init(&params)))
-            {
-                dtFreeNavMesh(mesh);
-                return false;
-            }
-
-            navMeshes[mapID] = mesh;
-        }
-
-        navMesh = navMeshes[mapID];
         navQuery->init(navMesh, 2048);
 
         // check if the tiles have been added already or load them
@@ -151,5 +130,33 @@ namespace DetourCLI
         }
 
         return true;
+    }
+
+    dtNavMesh* Detour::LoadNavMesh(int mapID)
+    {
+        if (navMeshes[mapID] == nullptr)
+        {
+            String^ mmapFilePath = mmapsFolderPath + String::Format("{0:D3}.mmap", mapID);
+            if (!File::Exists(mmapFilePath))
+                return nullptr;
+            array<unsigned char>^ mmapData = File::ReadAllBytes(mmapFilePath);
+            if (mmapData->Length < sizeof(dtNavMeshParams))
+                return nullptr;
+
+            dtNavMeshParams params;
+            pin_ptr<unsigned char> mmapDataPinned = &mmapData[0];
+            memcpy(&params, mmapDataPinned, sizeof(dtNavMeshParams));
+
+            dtNavMesh* mesh = dtAllocNavMesh();
+            if (dtStatusFailed(mesh->init(&params)))
+            {
+                dtFreeNavMesh(mesh);
+                return nullptr;
+            }
+
+            navMeshes[mapID] = mesh;
+        }
+
+        return navMeshes[mapID];
     }
 }

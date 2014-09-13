@@ -41,6 +41,7 @@ namespace DetourCLI
 
     private:
         bool LoadTiles(float position[3], int mapID, dtNavMesh* navMesh);
+        dtNavMesh* LoadNavMesh(int mapID);
         dtNavMeshQuery* navQuery;
         dtQueryFilter* filter;
 
