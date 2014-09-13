@@ -11,6 +11,8 @@ solution "recastnavigation"
 		"Debug",
 		"Release"
 	}
+	platforms { "x32", "x64" }
+	
 	location (todir)
 
 	-- extra warnings, no exceptions or rtti
@@ -63,6 +65,24 @@ project "Detour"
 		"../Detour/Source/*.cpp" 
 	}
 
+project "DetourCLI"
+	language "C++"
+	kind "SharedLib"
+	includedirs { 
+		"../DetourCLI/Include",
+		"../Detour/Include"
+	}
+	files { 
+		"../DetourCLI/Include/*.h", 
+		"../DetourCLI/Source/*.cpp" 
+	}
+	flags {
+		"Managed"
+	}
+	links { 
+		"Detour"
+	}
+	
 project "DetourCrowd"
 	language "C++"
 	kind "StaticLib"
