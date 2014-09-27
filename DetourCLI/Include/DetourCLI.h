@@ -20,6 +20,38 @@ namespace DetourCLI
         Point(float x, float y, float z) : X(x), Y(y), Z(z)
         {}
 
+        property float Length
+        {
+            float get()
+            {
+                return (float)Math::Sqrt(X * X + Y * Y + Z * Z);
+            }
+        }
+
+        property Point^ Direction
+        {
+            Point^ get()
+            {
+                float length = Length;
+                return gcnew Point(X / length, Y / length, Z / length);
+            }
+        }
+
+        static Point^ operator +(const Point^ a, const Point^ b)
+        {
+            return gcnew Point(a->X + b->X, a->Y + b->Y, a->Z + b->Z);
+        }
+
+        static Point^ operator -(const Point^ a, const Point^ b)
+        {
+            return gcnew Point(a->X - b->X, a->Y - b->Y, a->Z - b->Z);
+        }
+
+        static Point^ operator *(const Point^ point, const float scale)
+        {
+            return gcnew Point(point->X * scale, point->Y * scale, point->Z * scale);
+        }
+
         float X, Y, Z;
     };
 
@@ -29,6 +61,7 @@ namespace DetourCLI
         static const int MAX_PATH_LENGTH = 74;
         static const int MAX_POINT_PATH_LENGTH = 74;
         static const int VERTEX_SIZE = 3;
+        static const float SMOOTH_PATH_STEP_SIZE = 4.0f;
         static const int MAX_MAP_ID = 724 + 1;
         static const float SIZE_OF_GRIDS = 533.3333f;
 
